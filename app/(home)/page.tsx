@@ -5,8 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import PlantCard from "./components/plant-card";
-import TodayToDoListCard from "./components/today-todo-list";
-import GrowCycleCard from "./components/grow-cycle";
+import TodayToDoListCard from "./components/today-todo-list-card";
+import GrowCycleCard from "./components/grow-cycle-card";
+import { AlertsCard } from "./components/alert-card";
+import NowCard from "./components/now-card";
 
 const Home = async () => {
   const { userId } = await auth();
@@ -138,6 +140,17 @@ const Home = async () => {
             needsWatering={plantData.basil.today.needsWatering}
             nextWatering={plantData.basil.today.nextWatering}
             lightRemaining={plantData.basil.today.lightRemaining}
+          />
+
+          <AlertsCard alerts={plantData.basil.alerts} />
+
+          <NowCard
+            soilMoisture={plantData.basil.now.soilMoisture}
+            soilMoistureIdeal={plantData.basil.now.soilMoistureIdeal}
+            lightToday={plantData.basil.now.lightToday}
+            lightGoal={plantData.basil.now.lightGoal}
+            temperature={plantData.basil.now.temperature}
+            airHumidity={plantData.basil.now.airHumidity}
           />
         </div>
       </div>

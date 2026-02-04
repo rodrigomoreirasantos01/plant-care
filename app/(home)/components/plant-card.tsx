@@ -9,7 +9,7 @@ import {
   Scissors,
   FileEdit,
 } from "lucide-react";
-import MetricItem from "./metrics-item";
+import MetricItem from "./metrics-item-card";
 
 interface PlantCardProps {
   name: string;
