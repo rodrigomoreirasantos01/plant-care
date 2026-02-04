@@ -9,6 +9,7 @@ import TodayToDoListCard from "./components/today-todo-list-card";
 import GrowCycleCard from "./components/grow-cycle-card";
 import { AlertsCard } from "./components/alert-card";
 import NowCard from "./components/now-card";
+import { GuideCard } from "./components/guide-card";
 
 const Home = async () => {
   const { userId } = await auth();
@@ -151,6 +152,13 @@ const Home = async () => {
             lightGoal={plantData.basil.now.lightGoal}
             temperature={plantData.basil.now.temperature}
             airHumidity={plantData.basil.now.airHumidity}
+          />
+
+          <GuideCard
+            plantType={plantData.basil.guide.plantType}
+            wateringInfo={plantData.basil.guide.wateringInfo}
+            lightInfo={plantData.basil.guide.lightInfo}
+            notes={plantData.basil.guide.notes}
           />
         </div>
       </div>
