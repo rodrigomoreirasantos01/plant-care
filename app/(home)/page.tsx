@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import PlantCard from "./components/plant-card";
+import TodayToDoListCard from "./components/today-todo-list";
 
 const Home = async () => {
   const { userId } = await auth();
@@ -61,6 +62,13 @@ const Home = async () => {
               lightToday: { value: 6.2, ideal: "4–8h" },
               temperature: { value: 23, ideal: "20–26°C" },
             }}
+          />
+        </div>
+        <div className="col-span-5 space-y-6">
+          <TodayToDoListCard
+            needsWatering={true}
+            nextWatering="Tomorrow at 8 AM"
+            lightRemaining={10}
           />
         </div>
       </div>
