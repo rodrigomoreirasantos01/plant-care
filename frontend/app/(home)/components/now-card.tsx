@@ -1,6 +1,6 @@
-import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "../../../components/ui/card";
+import { Progress } from "../../../components/ui/progress";
+import { Badge } from "../../../components/ui/badge";
 import { Droplet, Sun, Thermometer, Wind } from "lucide-react";
 
 interface NowCardProps {
@@ -39,7 +39,6 @@ const NowCard = ({
           <div className="relative">
             <Progress value={soilMoisture} className="h-2" />
             <div
-              className="pointer-events-none absolute top-0 h-2 rounded-full bg-emerald-500/20"
               style={{
                 left: `${soilMoistureIdeal.min}%`,
                 width: `${soilMoistureIdeal.max - soilMoistureIdeal.min}%`,

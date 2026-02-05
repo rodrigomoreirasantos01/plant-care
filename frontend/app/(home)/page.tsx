@@ -52,14 +52,14 @@ const Home = async () => {
         { day: "Sun", value: 6 },
       ],
       today: {
-        needsWatering: false,
+        needsWatering: true,
         nextWatering: "Tomorrow at 8 AM",
         lightRemaining: 0,
       },
       alerts: [
         {
           id: "1",
-          severity: "info" as const,
+          severity: "critical" as const,
           message: "Consider pruning lower leaves for better air circulation",
         },
       ],
