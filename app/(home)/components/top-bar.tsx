@@ -9,7 +9,7 @@ const Topbar = () => {
       <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-6 px-6">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg">
             <span className="text-lg font-bold text-white">🌿</span>
           </div>
           <h1 className="text-lg font-semibold">PlantCare</h1>
