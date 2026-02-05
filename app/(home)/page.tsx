@@ -1,7 +1,3 @@
-import { Search, Bell, User } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import PlantCard from "./components/plant-card";
@@ -10,6 +6,9 @@ import GrowCycleCard from "./components/grow-cycle-card";
 import { AlertsCard } from "./components/alert-card";
 import NowCard from "./components/now-card";
 import { GuideCard } from "./components/guide-card";
+
+import TrendCard from "./components/trend-card";
+import Topbar from "./components/top-bar";
 
 const Home = async () => {
   const { userId } = await auth();
@@ -85,84 +84,60 @@ const Home = async () => {
   };
 
   return (
-    <main className="mx-auto max-w-[1440px] px-6 pt-20 pb-24">
-      <div className="bg-card border-border fixed top-0 right-0 left-0 z-50 h-16 border-b">
-        <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-6 px-6">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg">
-              <span className="text-lg font-bold text-white">🌿</span>
-            </div>
-            <h1 className="text-lg font-semibold">PlantCare</h1>
-          </div>
+    <div className="bg-background text-foreground min-h-screen">
+      <Topbar />
 
-          {/* Search */}
-          <div className="relative max-w-md flex-1">
-            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-            <Input
-              type="search"
-              placeholder="Search plants, guides, alerts..."
-              className="bg-muted/50 border-border pl-10"
+      <main className="mx-auto max-w-[1440px] px-6 pt-20 pb-24">
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-7 space-y-6">
+            <PlantCard
+              name={plantData.basil.name}
+              status={plantData.basil.status}
+              statusMessage={plantData.basil.statusMessage}
+              illustration={plantData.basil.illustration}
+              metrics={plantData.basil.metrics}
+            />
+
+            <GrowCycleCard
+              phase={plantData.basil.cycle.phase}
+              progress={plantData.basil.cycle.progress}
+              nextMilestone={plantData.basil.cycle.nextMilestone}
+            />
+
+            <TrendCard
+              moistureData={plantData.basil.trendMoisture}
+              lightData={plantData.basil.trendLight}
             />
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <Bell className="h-4 w-4" />
-              Alerts
-              <Badge variant="destructive" className="ml-1">
-                2
-              </Badge>
-            </Button>
 
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <User className="h-5 w-5" />
-            </Button>
+          <div className="col-span-5 space-y-6">
+            <TodayToDoListCard
+              needsWatering={plantData.basil.today.needsWatering}
+              nextWatering={plantData.basil.today.nextWatering}
+              lightRemaining={plantData.basil.today.lightRemaining}
+            />
+
+            <AlertsCard alerts={plantData.basil.alerts} />
+
+            <NowCard
+              soilMoisture={plantData.basil.now.soilMoisture}
+              soilMoistureIdeal={plantData.basil.now.soilMoistureIdeal}
+              lightToday={plantData.basil.now.lightToday}
+              lightGoal={plantData.basil.now.lightGoal}
+              temperature={plantData.basil.now.temperature}
+              airHumidity={plantData.basil.now.airHumidity}
+            />
+
+            <GuideCard
+              plantType={plantData.basil.guide.plantType}
+              wateringInfo={plantData.basil.guide.wateringInfo}
+              lightInfo={plantData.basil.guide.lightInfo}
+              notes={plantData.basil.guide.notes}
+            />
           </div>
         </div>
-      </div>
-      <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-7 space-y-6">
-          <PlantCard
-            name={plantData.basil.name}
-            status={plantData.basil.status}
-            statusMessage={plantData.basil.statusMessage}
-            illustration={plantData.basil.illustration}
-            metrics={plantData.basil.metrics}
-          />
-
-          <GrowCycleCard
-            phase={plantData.basil.cycle.phase}
-            progress={plantData.basil.cycle.progress}
-            nextMilestone={plantData.basil.cycle.nextMilestone}
-          />
-        </div>
-        <div className="col-span-5 space-y-6">
-          <TodayToDoListCard
-            needsWatering={plantData.basil.today.needsWatering}
-            nextWatering={plantData.basil.today.nextWatering}
-            lightRemaining={plantData.basil.today.lightRemaining}
-          />
-
-          <AlertsCard alerts={plantData.basil.alerts} />
-
-          <NowCard
-            soilMoisture={plantData.basil.now.soilMoisture}
-            soilMoistureIdeal={plantData.basil.now.soilMoistureIdeal}
-            lightToday={plantData.basil.now.lightToday}
-            lightGoal={plantData.basil.now.lightGoal}
-            temperature={plantData.basil.now.temperature}
-            airHumidity={plantData.basil.now.airHumidity}
-          />
-
-          <GuideCard
-            plantType={plantData.basil.guide.plantType}
-            wateringInfo={plantData.basil.guide.wateringInfo}
-            lightInfo={plantData.basil.guide.lightInfo}
-            notes={plantData.basil.guide.notes}
-          />
-        </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 };
 
