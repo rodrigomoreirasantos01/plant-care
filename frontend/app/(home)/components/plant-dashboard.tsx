@@ -70,9 +70,11 @@ const PlantDashboard = ({
 
       <div className="col-span-5 space-y-6">
         <TodayToDoListCard
-          needsWatering={plant.today.needsWatering}
-          nextWatering={plant.today.nextWatering}
-          lightRemaining={plant.today.lightRemaining}
+          plantId={plant.plantId}
+          metrics={plant.metrics}
+          now={plant.now}
+          today={plant.today}
+          onTodoCompleted={fetchPlants}
         />
 
         <AlertsCard alerts={plant.alerts} />

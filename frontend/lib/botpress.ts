@@ -12,7 +12,7 @@ function getClient(): Client {
     if (!token || !botId) {
       throw new Error(
         "Missing BOTPRESS_TOKEN or BOTPRESS_BOT_ID environment variables. " +
-          "Add them to your .env.local file."
+          "Add them to your .env.local file.",
       );
     }
 
@@ -99,27 +99,35 @@ export async function seedPlantData(userId: string) {
         ],
 
         today: {
-          needsWatering: true,
-          nextWatering: "Tomorrow at 8 AM",
-          lightRemaining: 0,
+          logged: {
+            watering: false,
+            light: false,
+            humidity: false,
+            temperature: false,
+            trimming: false,
+            pruning: false,
+          },
+          needsTrimming: false,
+          needsPruning: true,
         },
 
         alerts: [
           {
             id: "1",
             severity: "critical",
-            message:
-              "Consider pruning lower leaves for better air circulation",
+            message: "Consider pruning lower leaves for better air circulation",
           },
         ],
 
         now: {
-          soilMoisture: 45,
+          soilMoisture: 30,
           soilMoistureIdeal: { min: 35, max: 55 },
-          lightToday: 6,
+          lightToday: 4,
           lightGoal: 6,
           temperature: 24,
-          airHumidity: 65,
+          temperatureIdeal: { min: 20, max: 28 },
+          airHumidity: 45,
+          humidityIdeal: { min: 50, max: 70 },
         },
 
         guide: {
@@ -136,4 +144,78 @@ export async function seedPlantData(userId: string) {
   });
 
   return { success: true, plantId: "basil-001", alreadyExisted: false };
+}
+
+export type TodoType =
+  | "watering"
+  | "light"
+  | "humidity"
+  | "temperature"
+  | "trimming"
+  | "pruning";
+
+/**
+ * Complete multiple todo items for a plant in a single update.
+ * Sets the corresponding logged flags to true in `today.logged`
+ * and clears manual flags (trimming/pruning) when completed.
+ */
+export async function completePlantTodos(
+  plantId: string,
+  completedTodos: TodoType[],
+) {
+  const client = getClient();
+
+  const { rows } = await client.findTableRows({
+    table: TABLE_NAME,
+    filter: { plantId },
+    limit: 1,
+  });
+
+  if (rows.length === 0) {
+    throw new Error(`Plant ${plantId} not found`);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const row = rows[0] as any;
+  const rowId = row.id;
+
+  const today: Record<string, unknown> =
+    typeof row.today === "string" ? JSON.parse(row.today) : (row.today ?? {});
+
+  const logged: Record<string, boolean> =
+    typeof today.logged === "string"
+      ? JSON.parse(today.logged as string)
+      : ((today.logged as Record<string, boolean>) ?? {});
+
+  for (const todoType of completedTodos) {
+    logged[todoType] = true;
+
+    // Also clear legacy boolean flags (old format) for backward compat
+    switch (todoType) {
+      case "watering":
+        today.needsWatering = false;
+        break;
+      case "light":
+        today.lightRemaining = 0;
+        break;
+      case "humidity":
+        today.needsHumidity = false;
+        break;
+      case "trimming":
+        today.needsTrimming = false;
+        break;
+      case "pruning":
+        today.needsPruning = false;
+        break;
+    }
+  }
+
+  today.logged = logged;
+
+  await client.updateTableRows({
+    table: TABLE_NAME,
+    rows: [{ id: rowId, today }],
+  });
+
+  return { success: true, plantId, completedTodos };
 }

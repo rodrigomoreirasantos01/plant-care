@@ -42,6 +42,18 @@ export const PlantTable = new Table({
       needsWatering: z.boolean(),
       nextWatering: z.string(),
       lightRemaining: z.number(),
+      needsTrimming: z.boolean().optional(),
+      needsPruning: z.boolean().optional(),
+      logged: z
+        .object({
+          watering: z.boolean().optional(),
+          light: z.boolean().optional(),
+          humidity: z.boolean().optional(),
+          temperature: z.boolean().optional(),
+          trimming: z.boolean().optional(),
+          pruning: z.boolean().optional(),
+        })
+        .optional(),
     }),
 
     alerts: z.array(
@@ -58,7 +70,13 @@ export const PlantTable = new Table({
       lightToday: z.number(),
       lightGoal: z.number(),
       temperature: z.number(),
+      temperatureIdeal: z
+        .object({ min: z.number(), max: z.number() })
+        .optional(),
       airHumidity: z.number(),
+      humidityIdeal: z
+        .object({ min: z.number(), max: z.number() })
+        .optional(),
     }),
 
     guide: z.object({
