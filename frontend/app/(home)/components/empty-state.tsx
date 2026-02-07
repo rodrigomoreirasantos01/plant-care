@@ -4,7 +4,11 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-export default function EmptyState() {
+interface EmptyStateProps {
+  onPlantAdded?: () => void;
+}
+
+export default function EmptyState({ onPlantAdded }: EmptyStateProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -23,10 +27,10 @@ export default function EmptyState() {
 
       setSuccess(true);
 
-      // Reload the page to show the new data
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      // Notify the parent to re-fetch plants immediately
+      if (onPlantAdded) {
+        onPlantAdded();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
