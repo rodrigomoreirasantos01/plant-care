@@ -1,9 +1,13 @@
-import { Search, Bell, User } from "lucide-react";
+import { Search, Bell } from "lucide-react";
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import { Badge } from "../../../components/ui/badge";
+import { UserButton } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 
-const Topbar = () => {
+const Topbar = async () => {
+  const user = await currentUser();
+
   return (
     <div className="bg-card border-border fixed top-0 right-0 left-0 z-50 h-16 border-b">
       <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-6 px-6">
@@ -35,9 +39,14 @@ const Topbar = () => {
             </Badge>
           </Button>
 
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <User className="h-5 w-5" />
-          </Button>
+          {user && (
+            <div className="flex items-center gap-3">
+              <span className="text-muted-foreground text-sm">
+                {user.firstName ?? user.emailAddresses?.[0]?.emailAddress}
+              </span>
+              <UserButton afterSignOutUrl="/login" />
+            </div>
+          )}
         </div>
       </div>
     </div>

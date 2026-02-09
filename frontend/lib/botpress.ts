@@ -44,10 +44,9 @@ export async function getPlantsByUser(userId: string) {
 export async function seedPlantData(userId: string) {
   const client = getClient();
 
-  // Check if it already exists
   const { rows } = await client.findTableRows({
     table: TABLE_NAME,
-    filter: { plantId: "basil-001" },
+    filter: { plantId: "basil-001", userId },
     limit: 1,
   });
 
@@ -99,6 +98,11 @@ export async function seedPlantData(userId: string) {
         ],
 
         today: {
+          needsWatering: true,
+          nextWatering: "Tomorrow at 8 AM",
+          lightRemaining: 2,
+          needsTrimming: false,
+          needsPruning: true,
           logged: {
             watering: false,
             light: false,
@@ -107,8 +111,6 @@ export async function seedPlantData(userId: string) {
             trimming: false,
             pruning: false,
           },
-          needsTrimming: false,
-          needsPruning: true,
         },
 
         alerts: [

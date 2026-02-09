@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 
 interface EmptyStateProps {
   onPlantAdded?: () => void;
+  userName?: string;
 }
 
-export default function EmptyState({ onPlantAdded }: EmptyStateProps) {
+export default function EmptyState({ onPlantAdded, userName }: EmptyStateProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -42,7 +43,11 @@ export default function EmptyState({ onPlantAdded }: EmptyStateProps) {
     <Card className="border-dashed">
       <CardContent className="flex flex-col items-center justify-center py-16 text-center">
         <div className="mb-4 text-6xl">🌱</div>
-        <h2 className="mb-2 text-xl font-semibold">No plants yet</h2>
+        <h2 className="mb-2 text-xl font-semibold">
+          {userName
+            ? `Welcome, ${userName}! No plants yet`
+            : "No plants yet"}
+        </h2>
         <p className="text-muted-foreground mb-6 max-w-md">
           Start by adding your first plant. We&apos;ll populate your dashboard
           with a demo Basil plant so you can see how everything works.
