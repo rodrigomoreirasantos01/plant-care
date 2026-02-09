@@ -1,9 +1,8 @@
-import { Search, Bell } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "../../../components/ui/input";
-import { Button } from "../../../components/ui/button";
-import { Badge } from "../../../components/ui/badge";
 import { UserButton } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
+import NotificationBell from "./notification-bell";
 
 const Topbar = async () => {
   const user = await currentUser();
@@ -31,13 +30,7 @@ const Topbar = async () => {
 
         {/* Right actions */}
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" className="gap-2">
-            <Bell className="h-4 w-4" />
-            Alerts
-            <Badge variant="destructive" className="ml-1">
-              2
-            </Badge>
-          </Button>
+          <NotificationBell />
 
           {user && (
             <div className="flex items-center gap-3">

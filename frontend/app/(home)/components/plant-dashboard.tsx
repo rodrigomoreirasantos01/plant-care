@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useNotifications } from "../contexts/notification-context";
 import PlantCard from "./plant-card";
 import TodayToDoListCard from "./today-todo-list-card";
 import GrowCycleCard from "./grow-cycle-card";
@@ -186,6 +187,7 @@ const PlantDashboard = ({
   userName,
   pollingInterval = 5000,
 }: PlantDashboardProps) => {
+  const { setAlertNotifications } = useNotifications();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [plants, setPlants] = useState<any[]>(initialPlants);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -270,6 +272,26 @@ const PlantDashboard = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIndex]);
+
+  // Push alert notifications to the notification context
+  const alertNotifFingerprint = currentAlerts
+    .map((a) => a.id.replace(/-\d+$/, ""))
+    .sort()
+    .join(",");
+
+  useEffect(() => {
+    setAlertNotifications(
+      currentAlerts.map((a) => ({
+        id: `alert-${a.id.replace(/-\d+$/, "")}`,
+        type: "alert" as const,
+        title: a.message,
+        description:
+          a.severity.charAt(0).toUpperCase() + a.severity.slice(1),
+        severity: a.severity,
+      })),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alertNotifFingerprint, setAlertNotifications]);
 
   if (plants.length === 0) {
     return <EmptyState onPlantAdded={fetchPlants} userName={userName} />;

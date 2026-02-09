@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Topbar from "./components/top-bar";
 import PlantDashboard from "./components/plant-dashboard";
 import { getPlantsByUser } from "@/lib/botpress";
+import { NotificationProvider } from "./contexts/notification-context";
 
 const Home = async () => {
   const { userId } = await auth();
@@ -21,16 +22,18 @@ const Home = async () => {
   }
 
   return (
-    <div className="bg-background text-foreground min-h-screen">
-      <Topbar />
+    <NotificationProvider>
+      <div className="bg-background text-foreground min-h-screen">
+        <Topbar />
 
-      <main className="mx-auto max-w-[1440px] px-6 pt-20 pb-24">
-        <PlantDashboard
-          plants={plants}
-          userName={user?.firstName ?? undefined}
-        />
-      </main>
-    </div>
+        <main className="mx-auto max-w-[1440px] px-6 pt-20 pb-24">
+          <PlantDashboard
+            plants={plants}
+            userName={user?.firstName ?? undefined}
+          />
+        </main>
+      </div>
+    </NotificationProvider>
   );
 };
 

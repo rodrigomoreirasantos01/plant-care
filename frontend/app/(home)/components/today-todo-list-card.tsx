@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useNotifications } from "../contexts/notification-context";
 import { Card } from "../../../components/ui/card";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { Label } from "../../../components/ui/label";
@@ -255,6 +256,7 @@ const TodayToDoListCard = ({
   today,
   onTodoCompleted,
 }: TodayCardProps) => {
+  const { setTodoNotifications } = useNotifications();
   const [checkedItems, setCheckedItems] = useState<Set<TodoType>>(new Set());
   const [submittedItems, setSubmittedItems] = useState<Set<TodoType>>(
     new Set(),
@@ -280,6 +282,21 @@ const TodayToDoListCard = ({
     if (MANUAL_TODO_TYPES.includes(t.id)) return !logged[t.id];
     return true;
   });
+
+  const activeTodoIds = activeTodos.map((t) => t.id).join(",");
+
+  useEffect(() => {
+    setTodoNotifications(
+      activeTodos.map((t) => ({
+        id: `todo-${t.id}`,
+        type: "todo" as const,
+        title: t.label,
+        description: t.description,
+        todoType: t.id,
+      })),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTodoIds, setTodoNotifications]);
   const doneTodos = allTodos.filter((t) => {
     if (submittedItems.has(t.id)) return true;
     if (MANUAL_TODO_TYPES.includes(t.id)) return !!logged[t.id];
