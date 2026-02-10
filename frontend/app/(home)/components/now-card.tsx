@@ -4,23 +4,27 @@ import { Badge } from "../../../components/ui/badge";
 import { Droplet, Sun, Thermometer, Wind } from "lucide-react";
 
 interface NowCardProps {
-  soilMoisture: number;
-  soilMoistureIdeal: { min: number; max: number };
-  lightToday: number;
-  lightGoal: number;
-  temperature: number;
-  airHumidity: number;
+  metrics: {
+    soilMoisture: { value: number; ideal: string };
+    lightToday: { value: number; ideal: string };
+    temperature: { value: number; ideal: string };
+  };
+  now: {
+    soilMoistureIdeal: { min: number; max: number };
+    lightGoal: number;
+    airHumidity: number;
+  };
 }
 
-const NowCard = ({
-  soilMoisture,
-  soilMoistureIdeal,
-  lightToday,
-  lightGoal,
-  temperature,
-  airHumidity,
-}: NowCardProps) => {
-  const lightProgress = (lightToday / lightGoal) * 100;
+const NowCard = ({ metrics, now }: NowCardProps) => {
+  const soilMoisture = metrics.soilMoisture.value;
+  const soilMoistureIdeal = now.soilMoistureIdeal;
+  const lightToday = metrics.lightToday.value;
+  const lightGoal = now.lightGoal;
+  const temperature = metrics.temperature.value;
+  const airHumidity = now.airHumidity;
+
+  const lightProgress = lightGoal > 0 ? (lightToday / lightGoal) * 100 : 0;
 
   return (
     <Card className="bg-card border-border p-6 shadow-sm">

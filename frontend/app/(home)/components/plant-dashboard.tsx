@@ -13,6 +13,23 @@ import EmptyState from "./empty-state";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+const NOTES_STORAGE_KEY = "plantcare-user-notes";
+
+function loadUserNotes(): Record<string, string[]> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(NOTES_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveUserNotes(notes: Record<string, string[]>) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
+}
+
 interface PlantDashboardProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   plants: any[];
@@ -191,8 +208,45 @@ const PlantDashboard = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [plants, setPlants] = useState<any[]>(initialPlants);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [userNotesMap, setUserNotesMap] = useState<Record<string, string[]>>(
+    {},
+  );
+
+  useEffect(() => {
+    setUserNotesMap(loadUserNotes());
+  }, []);
 
   const plant = plants[selectedIndex] ?? null;
+  const plantId: string = plant?.plantId ?? "";
+  const currentUserNotes = userNotesMap[plantId] ?? [];
+
+  const handleToggleNote = useCallback(
+    (note: string) => {
+      setUserNotesMap((prev) => {
+        const existing = prev[plantId] ?? [];
+        const updated = existing.includes(note)
+          ? existing.filter((n) => n !== note)
+          : [...existing, note];
+        const next = { ...prev, [plantId]: updated };
+        saveUserNotes(next);
+        return next;
+      });
+    },
+    [plantId],
+  );
+
+  const handleRemoveNote = useCallback(
+    (note: string) => {
+      setUserNotesMap((prev) => {
+        const existing = prev[plantId] ?? [];
+        const updated = existing.filter((n) => n !== note);
+        const next = { ...prev, [plantId]: updated };
+        saveUserNotes(next);
+        return next;
+      });
+    },
+    [plantId],
+  );
 
   const initialAlerts = plant ? generateAlertsFromMetrics(plant) : [];
   const [currentAlerts, setCurrentAlerts] = useState<Alert[]>(initialAlerts);
@@ -285,8 +339,7 @@ const PlantDashboard = ({
         id: `alert-${a.id.replace(/-\d+$/, "")}`,
         type: "alert" as const,
         title: a.message,
-        description:
-          a.severity.charAt(0).toUpperCase() + a.severity.slice(1),
+        description: a.severity.charAt(0).toUpperCase() + a.severity.slice(1),
         severity: a.severity,
       })),
     );
@@ -299,7 +352,6 @@ const PlantDashboard = ({
 
   return (
     <div className="space-y-6">
-      {/* Plant selector - shown when user has multiple plants */}
       {plants.length > 1 && (
         <div className="flex items-center justify-center gap-4">
           <Button
@@ -347,6 +399,8 @@ const PlantDashboard = ({
             statusMessage={plant.statusMessage}
             illustration={plant.illustration}
             metrics={plant.metrics}
+            userNotes={currentUserNotes}
+            onToggleNote={handleToggleNote}
           />
 
           <GrowCycleCard
@@ -373,12 +427,8 @@ const PlantDashboard = ({
           <AlertsCard alerts={currentAlerts} alertHistory={alertHistory} />
 
           <NowCard
-            soilMoisture={plant.now.soilMoisture}
-            soilMoistureIdeal={plant.now.soilMoistureIdeal}
-            lightToday={plant.now.lightToday}
-            lightGoal={plant.now.lightGoal}
-            temperature={plant.now.temperature}
-            airHumidity={plant.now.airHumidity}
+            metrics={plant.metrics}
+            now={plant.now}
           />
 
           <GuideCard
@@ -386,6 +436,8 @@ const PlantDashboard = ({
             wateringInfo={plant.guide.wateringInfo}
             lightInfo={plant.guide.lightInfo}
             notes={plant.guide.notes}
+            userNotes={currentUserNotes}
+            onRemoveNote={handleRemoveNote}
           />
         </div>
       </div>
